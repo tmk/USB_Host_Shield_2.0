@@ -513,18 +513,22 @@ void MAX3421e< SPI_SS, INTR >::busprobe() {
         switch(bus_sample) { //start full-speed or low-speed host
                 case( bmJSTATUS):
                         if((regRd(rMODE) & bmLOWSPEED) == 0) {
+                                if (vbusState == FSHOST) return;
                                 regWr(rMODE, MODE_FS_HOST); //start full-speed host
                                 vbusState = FSHOST;
                         } else {
+                                if (vbusState == LSHOST) return;
                                 regWr(rMODE, MODE_LS_HOST); //start low-speed host
                                 vbusState = LSHOST;
                         }
                         break;
                 case( bmKSTATUS):
                         if((regRd(rMODE) & bmLOWSPEED) == 0) {
+                                if (vbusState == LSHOST) return;
                                 regWr(rMODE, MODE_LS_HOST); //start low-speed host
                                 vbusState = LSHOST;
                         } else {
+                                if (vbusState == FSHOST) return;
                                 regWr(rMODE, MODE_FS_HOST); //start full-speed host
                                 vbusState = FSHOST;
                         }
