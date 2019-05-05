@@ -515,6 +515,7 @@ void USB::Task(void) //USB state machine
                         break;
                 case USB_ATTACHED_SUBSTATE_WAIT_RESET_COMPLETE:
                         if((regRd(rHCTL) & bmBUSRST) == 0) {
+                                regWr(rHIRQ, bmFRAMEIRQ);
                                 tmpdata = regRd(rMODE) | bmSOFKAENAB; //start SOF generation
                                 regWr(rMODE, tmpdata);
                                 usb_task_state = USB_ATTACHED_SUBSTATE_WAIT_SOF;
