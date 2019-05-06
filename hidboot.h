@@ -475,6 +475,7 @@ uint8_t HIDBoot<BOOT_PROTOCOL>::Init(uint8_t parent, uint8_t port, bool lowspeed
 
         // Get RPIPE and throw it away.
 
+/* Remove LED blinking. This is unnecessary and may cause unclear problem with some keyboard.
         if(BOOT_PROTOCOL & USB_HID_PROTOCOL_KEYBOARD) {
                 // Wake keyboard interface by twinkling up to 5 LEDs that are in the spec.
                 // kana, compose, scroll, caps, num
@@ -486,6 +487,7 @@ uint8_t HIDBoot<BOOT_PROTOCOL>::Init(uint8_t parent, uint8_t port, bool lowspeed
                         delay(25);
                 }
         }
+*/
         USBTRACE("BM configured\r\n");
 
         bPollEnable = true;
