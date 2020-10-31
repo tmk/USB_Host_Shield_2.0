@@ -173,8 +173,6 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
 
                                 rcode = InTransfer(pep, nak_limit, &read, dataptr);
                                 if(rcode == hrTOGERR) {
-                                        // yes, we flip it wrong here so that next time it is actually correct!
-                                        pep->bmRcvToggle = (regRd(rHRSL) & bmSNDTOGRD) ? 0 : 1;
                                         USBTRACE("T1 ");
                                         continue;
                                 }
@@ -242,9 +240,6 @@ uint8_t USB::InTransfer(EpInfo *pep, uint16_t nak_limit, uint16_t *nbytesptr, ui
 #endif
                 rcode = dispatchPkt(tokIN, pep->epAddr, nak_limit); //IN packet to EP-'endpoint'. Function takes care of NAKS.
                 if(rcode == hrTOGERR) {
-                        // yes, we flip it wrong here so that next time it is actually correct!
-                        pep->bmRcvToggle = (regRd(rHRSL) & bmRCVTOGRD) ? 0 : 1;
-                        regWr(rHCTL, (pep->bmRcvToggle) ? bmRCVTOG1 : bmRCVTOG0); //set toggle value
                         USBTRACE("T2 ");
                         continue;
                 }
@@ -367,9 +362,6 @@ uint8_t USB::OutTransfer(EpInfo *pep, uint16_t nak_limit, uint16_t nbytes, uint8
                                         //return ( rcode);
                                         break;
                                 case hrTOGERR:
-                                        // yes, we flip it wrong here so that next time it is actually correct!
-                                        pep->bmSndToggle = (regRd(rHRSL) & bmSNDTOGRD) ? 0 : 1;
-                                        regWr(rHCTL, (pep->bmSndToggle) ? bmSNDTOG1 : bmSNDTOG0); //set toggle value
                                         USBTRACE("T3 ");
                                         break;
                                 default:
