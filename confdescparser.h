@@ -145,14 +145,19 @@ bool ConfigDescParser<CLASS_ID, SUBCLASS_ID, PROTOCOL_ID, MASK>::ParseDescriptor
                                         if(!valParser.Parse(pp, pcntdn))
                                                 return false;
                                         confValue = ucd->bConfigurationValue;
+                                        //USBTRACE("[pC]");
                                         break;
                                 case USB_DESCRIPTOR_INTERFACE:
+                                        //USBTRACE("[pI3]");
                                         if(!valParser.Parse(pp, pcntdn))
                                                 return false;
+                                        //USBTRACE("[pI2]");
                                         if((MASK & CP_MASK_COMPARE_CLASS) && uid->bInterfaceClass != CLASS_ID)
                                                 break;
+                                        //USBTRACE("[pI1]");
                                         if((MASK & CP_MASK_COMPARE_SUBCLASS) && uid->bInterfaceSubClass != SUBCLASS_ID)
                                                 break;
+                                        //USBTRACE("[pI0]");
                                         if(UseOr) {
                                                 if((!((MASK & CP_MASK_COMPARE_PROTOCOL) && uid->bInterfaceProtocol)))
                                                         break;
@@ -160,17 +165,21 @@ bool ConfigDescParser<CLASS_ID, SUBCLASS_ID, PROTOCOL_ID, MASK>::ParseDescriptor
                                                 if((MASK & CP_MASK_COMPARE_PROTOCOL) && uid->bInterfaceProtocol != PROTOCOL_ID)
                                                         break;
                                         }
+                                        //USBTRACE("[pI]");
                                         isGoodInterface = true;
                                         ifaceNumber = uid->bInterfaceNumber;
                                         ifaceAltSet = uid->bAlternateSetting;
                                         protoValue = uid->bInterfaceProtocol;
                                         break;
                                 case USB_DESCRIPTOR_ENDPOINT:
+                                        //USBTRACE("[pE1]");
                                         if(!valParser.Parse(pp, pcntdn))
                                                 return false;
+                                        //USBTRACE("[pE0]");
                                         if(isGoodInterface)
                                                 if(theXtractor)
                                                         theXtractor->EndpointXtract(confValue, ifaceNumber, ifaceAltSet, protoValue, (USB_ENDPOINT_DESCRIPTOR*)varBuffer);
+                                        //USBTRACE("[pE]");
                                         break;
                                         //case HID_DESCRIPTOR_HID:
                                         //      if (!valParser.Parse(pp, pcntdn))
@@ -178,6 +187,7 @@ bool ConfigDescParser<CLASS_ID, SUBCLASS_ID, PROTOCOL_ID, MASK>::ParseDescriptor
                                         //      PrintHidDescriptor((const USB_HID_DESCRIPTOR*)varBuffer);
                                         //      break;
                                 default:
+                                        //USBTRACE("[pH]");
                                         if(!theSkipper.Skip(pp, pcntdn, dscrLen - 2))
                                                 return false;
                         }

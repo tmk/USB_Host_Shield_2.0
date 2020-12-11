@@ -182,6 +182,8 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
                                         ((USBReadParser*)p)->Parse(read, dataptr, total - left);
 
                                 left -= read;
+                                USBTRACE2("read:", read);
+                                USBTRACE2("left:", left);
 
                                 if(read < nbytes)
                                         break;
@@ -618,6 +620,7 @@ again:
                 return rcode;
 
         rcode = devConfig[driver]->Init(parent, port, lowspeed);
+        USBTRACE2("Init:", rcode);
         if(rcode == hrJERR && retries < 3) { // Some devices returns this when plugged in - trying to initialize the device again usually works
                 delay(100);
                 retries++;
@@ -806,6 +809,7 @@ uint8_t USB::getConfDescr(uint8_t addr, uint8_t ep, uint8_t conf, USBReadParser 
         uint8_t buf[bufSize];
         USB_CONFIGURATION_DESCRIPTOR *ucd = reinterpret_cast<USB_CONFIGURATION_DESCRIPTOR *>(buf);
 
+        USBTRACE("[gC]");
         uint8_t ret = getConfDescr(addr, ep, 9, conf, buf);
 
         if(ret)
@@ -813,6 +817,7 @@ uint8_t USB::getConfDescr(uint8_t addr, uint8_t ep, uint8_t conf, USBReadParser 
 
         uint16_t total = ucd->wTotalLength;
 
+        USBTRACE2("Cl:", total);
         //USBTRACE2("\r\ntotal conf.size:", total);
 
         return ( ctrlReq(addr, ep, bmREQ_GET_DESCR, USB_REQUEST_GET_DESCRIPTOR, conf, USB_DESCRIPTOR_CONFIGURATION, 0x0000, total, bufSize, buf, p));
