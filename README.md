@@ -1,8 +1,8 @@
-# USB Host Library Rev.2.0
+# USB Host Library Rev. 2.0
 
 The code is released under the GNU General Public License.
 __________
-[![Build Status](https://travis-ci.org/felis/USB_Host_Shield_2.0.svg?branch=master)](https://travis-ci.org/felis/USB_Host_Shield_2.0)
+[![](https://github.com/felis/USB_Host_Shield_2.0/workflows/CI/badge.svg)](https://github.com/felis/USB_Host_Shield_2.0/actions?query=branch%3Amaster)
 
 # Summary
 This is Revision 2.0 of MAX3421E-based USB Host Shield Library for AVR's.
@@ -19,10 +19,10 @@ For more information about the hardware see the [Hardware Manual](https://chome.
 
 # Developed By
 
-* __Oleg Mazurov  - <mazurov@gmail.com>
-* __Alexei Glushchenko, Circuits@Home__ - <alex-gl@mail.ru>
+* __Oleg Mazurov__ - <mazurov@gmail.com>
+* __Alexei Glushchenko__ - <alex-gl@mail.ru>
     * Developers of the USB Core, HID, FTDI, ADK, ACM, and PL2303 libraries
-* __Kristian Lauszus, TKJ Electronics__ - <kristianl@tkjelectronics.com>
+* __Kristian Sloth Lauszus__ - <lauszus@gmail.com>
     * Developer of the [BTD](#bluetooth-libraries), [BTHID](#bthid-library), [SPP](#spp-library), [PS4](#ps4-library), [PS3](#ps3-library), [Wii](#wii-library), [Xbox](#xbox-library), and [PSBuzz](#ps-buzz-library) libraries
 * __Andrew Kroll__ - <xxxajk@gmail.com>
     * Major contributor to mass storage code
@@ -50,6 +50,7 @@ For more information about the hardware see the [Hardware Manual](https://chome.
         * [Xbox library](#xbox-library)
         * [Xbox 360 Library](#xbox-360-library)
         * [Xbox ONE Library](#xbox-one-library)
+        * [Xbox ONE S Library](#xbox-one-s-library)
     * [Wii library](#wii-library)
     * [PS Buzz Library](#ps-buzz-library)
     * [HID Libraries](#hid-libraries)
@@ -108,7 +109,7 @@ Currently the following boards are supported by the library:
 * Arduino Due, Intel Galileo, Intel Galileo 2, and Intel Edison
     * Note that the Intel Galileo uses pin 2 and 3 as INT and SS pin respectively by default, so some modifications to the shield are needed. See the "Interface modifications" section in the [hardware manual](https://chome.nerpa.tech/usb-host-shield-hardware-manual) for more information.
     * Note native USB host is not supported on any of these platforms. You will have to use the shield for now.
-* Teensy (Teensy++ 1.0, Teensy 2.0, Teensy++ 2.0, Teensy 3.x, and Teensy LC)
+* Teensy (Teensy++ 1.0, Teensy 2.0, Teensy++ 2.0, Teensy 3.x, Teensy LC and Teensy 4.x)
     * Note if you are using the Teensy 3.x you should download this SPI library as well: <https://github.com/xxxajk/spi4teensy3>. You should then add ```#include <spi4teensy3.h>``` to your .ino file.
 * Balanduino
 * Sanguino
@@ -186,7 +187,7 @@ For information see the following blog post: <http://blog.tkjelectronics.dk/2014
 
 Also check out this excellent Wiki by Frank Zhao about the PS4 controller: <http://eleccelerator.com/wiki/index.php?title=DualShock_4> and this Linux driver: <https://github.com/chrippa/ds4drv>.
 
-Several guides on how to use the PS4 library has been written by Dr. James E. Barger and are available at the following link: <https://sites.google.com/view/vbatc-engineeringtechnology2/control-system-tutorials/ps4-tutorials>.
+Several guides on how to use the PS4 library has been written by Dr. James E. Barger and are available at the following link: <https://sites.google.com/view/crosswaystation/ps4-tutorials>.
 
 ### PS3 Library
 
@@ -257,11 +258,17 @@ All the information regarding the Xbox 360 controller protocol are form these si
 
 #### Xbox ONE Library
 
-An Xbox ONE controller is supported via USB in the [XBOXONE](XBOXONE.cpp) class. It is heavily based on the 360 library above. In addition to cross referencing the above, information on the protocol was found at:
+A Xbox ONE controller is supported via USB in the [XBOXONE](XBOXONE.cpp) class. It is heavily based on the 360 library above. In addition to cross referencing the above, information on the protocol was found at:
 
 * <https://github.com/quantus/xbox-one-controller-protocol>
 * <https://github.com/torvalds/linux/blob/master/drivers/input/joystick/xpad.c>
 * <https://github.com/kylelemons/xbox/blob/master/xbox.go>
+
+#### Xbox ONE S Library
+
+A Xbox ONE controller is supported via Bluetooth in the [XBOXONESBT](XBOXONESBT.cpp) class.
+
+Special thanks to [HisashiKato](https://github.com/HisashiKato) for his help: <https://github.com/felis/USB_Host_Shield_2.0/issues/252#issuecomment-716912362>.
 
 ### [Wii library](Wii.cpp)
 
