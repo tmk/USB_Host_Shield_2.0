@@ -168,8 +168,7 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
 #if defined(ESP8266) || defined(ESP32)
                         yield(); // needed in order to reset the watchdog timer on the ESP8266
 #endif
-                                uint16_t read = nbytes;
-                                //uint16_t read = (left<nbytes) ? left : nbytes;
+                                uint16_t read = (left<nbytes) ? left : nbytes;
 
                                 rcode = InTransfer(pep, nak_limit, &read, dataptr);
                                 if(rcode == hrTOGERR) {
