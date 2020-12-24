@@ -375,6 +375,8 @@ uint8_t HIDBoot<BOOT_PROTOCOL>::Init(uint8_t parent, uint8_t port, bool lowspeed
 
         p->lowspeed = lowspeed;
 
+        pUsb->setEpInfoEntry(bAddress, 1, epInfo);
+
         if(len)
                 rcode = pUsb->getDevDescr(bAddress, 0, len, (uint8_t*)buf);
 
