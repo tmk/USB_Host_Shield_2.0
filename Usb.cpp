@@ -540,6 +540,7 @@ void USB::Task(void) //USB state machine
                         //Serial.println(lowspeed, HEX);
 
                         rcode = Configuring(0, 0, lowspeed);
+                        USBTRACE2("Configuring:", rcode);
 
                         if(rcode) {
                                 if(rcode != USB_DEV_CONFIG_ERROR_DEVICE_INIT_INCOMPLETE) {
@@ -619,6 +620,7 @@ again:
         } else if(rcode)
                 return rcode;
 
+        USBTRACE2("driver:", driver);
         rcode = devConfig[driver]->Init(parent, port, lowspeed);
         USBTRACE2("Init:", rcode);
         if(rcode == hrJERR && retries < 3) { // Some devices returns this when plugged in - trying to initialize the device again usually works
@@ -629,6 +631,7 @@ again:
         if(rcode) {
                 // Issue a bus reset, because the device may be in a limbo state
                 if(parent == 0) {
+                        USBTRACE("BUSRST\n");
                         // Send a bus reset on the root interface.
                         regWr(rHCTL, bmBUSRST); //issue bus reset
                         delay(102); // delay 102ms, compensate for clock inaccuracy.
@@ -740,11 +743,18 @@ uint8_t USB::Configuring(uint8_t parent, uint8_t port, bool lowspeed) {
         // VID/PID & class tests default to false for drivers not yet ported
         // subclass defaults to true, so you don't have to define it if you don't have to.
         //
+        USBTRACE2("vid:", vid);
+        USBTRACE2("pid:", pid);
+        USBTRACE2("klass:", klass);
+        USBTRACE2("subklass:", subklass);
+        USBTRACE("AC1\n");
         for(devConfigIndex = 0; devConfigIndex < USB_NUMDEVICES; devConfigIndex++) {
                 if(!devConfig[devConfigIndex]) continue; // no driver
                 if(devConfig[devConfigIndex]->GetAddress()) continue; // consumed
                 if(devConfig[devConfigIndex]->DEVSUBCLASSOK(subklass) && (devConfig[devConfigIndex]->VIDPIDOK(vid, pid) || devConfig[devConfigIndex]->DEVCLASSOK(klass))) {
+                        USBTRACE("A1 ");
                         rcode = AttemptConfig(devConfigIndex, parent, port, lowspeed);
+                        USBTRACE2("AttemptConfig:", rcode);
                         if(rcode != USB_DEV_CONFIG_ERROR_DEVICE_NOT_SUPPORTED)
                                 break;
                 }
@@ -756,11 +766,14 @@ uint8_t USB::Configuring(uint8_t parent, uint8_t port, bool lowspeed) {
 
 
         // blindly attempt to configure
+        USBTRACE("AC2\n");
         for(devConfigIndex = 0; devConfigIndex < USB_NUMDEVICES; devConfigIndex++) {
                 if(!devConfig[devConfigIndex]) continue;
                 if(devConfig[devConfigIndex]->GetAddress()) continue; // consumed
                 if(devConfig[devConfigIndex]->DEVSUBCLASSOK(subklass) && (devConfig[devConfigIndex]->VIDPIDOK(vid, pid) || devConfig[devConfigIndex]->DEVCLASSOK(klass))) continue; // If this is true it means it must have returned USB_DEV_CONFIG_ERROR_DEVICE_NOT_SUPPORTED above
+                USBTRACE("A2 ");
                 rcode = AttemptConfig(devConfigIndex, parent, port, lowspeed);
+                USBTRACE2("AttemptConfig2:", rcode);
 
                 //printf("ERROR ENUMERATING %2.2x\r\n", rcode);
                 if(!(rcode == USB_DEV_CONFIG_ERROR_DEVICE_NOT_SUPPORTED || rcode == USB_ERROR_CLASS_INSTANCE_ALREADY_IN_USE)) {
