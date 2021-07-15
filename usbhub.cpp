@@ -55,6 +55,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         //USBTRACE("\r\nHub Init Start ");
         //D_PrintHex<uint8_t > (bInitState, 0x80);
 
+        USBTRACE2("hub::Init:", port);
         AddressPool &addrPool = pUsb->GetAddressPool();
 
         //switch (bInitState) {
@@ -81,6 +82,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
 
         // Get device descriptor
         rcode = pUsb->getDevDescr(0, 0, 8, (uint8_t*)buf);
+        USBTRACE2("hub::getDevDescr:", rcode);
 
         p->lowspeed = false;
 
@@ -109,6 +111,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
 
         // Assign new address to the device
         rcode = pUsb->setAddr(0, 0, bAddress);
+        USBTRACE2("hub::setAddr:", rcode);
 
         if(rcode) {
                 // Restore p->epinfo
@@ -126,12 +129,14 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         if(len)
                 rcode = pUsb->getDevDescr(bAddress, 0, len, (uint8_t*)buf);
 
+        USBTRACE2("hub::getDevDescr:", rcode);
         if(rcode)
                 goto FailGetDevDescr;
 
         // Assign epInfo to epinfo pointer
         rcode = pUsb->setEpInfoEntry(bAddress, 2, epInfo);
 
+        USBTRACE2("hub::setEpInfoEntry:", rcode);
         if(rcode)
                 goto FailSetDevTblEntry;
 
@@ -140,6 +145,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         //        case 1:
         // Get hub descriptor
         rcode = GetHubDescriptor(0, 8, buf);
+        USBTRACE2("hub::GetHubDescriptor:", rcode);
 
         if(rcode)
                 goto FailGetHubDescr;
@@ -152,10 +158,12 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         //        case 2:
         // Read configuration Descriptor in Order To Obtain Proper Configuration Value
         rcode = pUsb->getConfDescr(bAddress, 0, 8, 0, buf);
+        USBTRACE2("hub::getConfDescr:", rcode);
 
         if(!rcode) {
                 cd_len = ucd->wTotalLength;
                 rcode = pUsb->getConfDescr(bAddress, 0, cd_len, 0, buf);
+                USBTRACE2("hub::getConfDescr:", rcode);
         }
         if(rcode)
                 goto FailGetConfDescr;
@@ -166,6 +174,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
                 uint8_t buf2[24];
 
                 rcode = pUsb->getConfDescr(bAddress, 0, buf[0], 0, buf2);
+                USBTRACE2("hub::getConfDescr:", rcode);
 
                 if(rcode)
                         goto FailGetConfDescr;
@@ -173,6 +182,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
 
         // Set Configuration Value
         rcode = pUsb->setConf(bAddress, 0, buf[5]);
+        USBTRACE2("hub::setConf:", rcode);
 
         if(rcode)
                 goto FailSetConfDescr;
@@ -190,6 +200,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         //}
         //bInitState = 0;
         //USBTRACE("...OK\r\n");
+        USBTRACE("hub::done\r\n");
         return 0;
 
         // Oleg, No debugging?? -- xxxajk
