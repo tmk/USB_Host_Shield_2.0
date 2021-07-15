@@ -158,7 +158,6 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
         {
                 if(direction) //IN transfer
                 {
-                        USBTRACE("Ci ");
                         uint16_t left = total;
 
                         pep->bmRcvToggle = 1; //bmRCVTOG1;
@@ -172,7 +171,6 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
 
                                 rcode = InTransfer(pep, nak_limit, &read, dataptr);
                                 if(rcode == hrTOGERR) {
-                                        USBTRACE("T1 ");
                                         continue;
                                 }
 
@@ -190,7 +188,6 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
                         }
                 } else //OUT transfer
                 {
-                        USBTRACE("Co ");
                         pep->bmSndToggle = 1; //bmSNDTOG1;
                         rcode = OutTransfer(pep, nak_limit, nbytes, dataptr);
                 }
@@ -239,7 +236,6 @@ uint8_t USB::InTransfer(EpInfo *pep, uint16_t nak_limit, uint16_t *nbytesptr, ui
 #endif
                 rcode = dispatchPkt(tokIN, pep->epAddr, nak_limit); //IN packet to EP-'endpoint'. Function takes care of NAKS.
                 if(rcode == hrTOGERR) {
-                        USBTRACE("T2 ");
                         continue;
                 }
                 if(rcode) {
@@ -361,7 +357,6 @@ uint8_t USB::OutTransfer(EpInfo *pep, uint16_t nak_limit, uint16_t nbytes, uint8
                                         //return ( rcode);
                                         break;
                                 case hrTOGERR:
-                                        USBTRACE("T3 ");
                                         break;
                                 default:
                                         goto breakout;
