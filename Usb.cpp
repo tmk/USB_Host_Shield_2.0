@@ -134,7 +134,10 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
 
         rcode = SetAddress(addr, ep, &pep, &nak_limit);
 
-        if (rcode) USBTRACE2("crSA:", rcode);
+        if (rcode) {
+            USBTRACE2("nak_limit:", nak_limit);
+            USBTRACE2("crSA:", rcode);
+        }
         if(rcode)
                 return rcode;
 
@@ -152,7 +155,10 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
 
         rcode = dispatchPkt(tokSETUP, ep, nak_limit); //dispatch packet
 
-        if (rcode) USBTRACE2("crSU:", rcode);
+        if (rcode) {
+            USBTRACE2("nak_limit:", nak_limit);
+            USBTRACE2("crSU:", rcode);
+        }
         if(rcode) //return HRSLT if not zero
                 return ( rcode);
 
@@ -173,7 +179,10 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
                                 uint16_t read = (left<nbytes) ? left : nbytes;
 
                                 rcode = InTransfer(pep, nak_limit, &read, dataptr);
-                                if (rcode) USBTRACE2("crIN:", rcode);
+                                if (rcode) {
+                                    USBTRACE2("nak_limit:", nak_limit);
+                                    USBTRACE2("crIN:", rcode);
+                                }
                                 if(rcode == hrTOGERR) {
                                         USBTRACE("T1 ");
                                         continue;
@@ -198,7 +207,10 @@ uint8_t USB::ctrlReq(uint8_t addr, uint8_t ep, uint8_t bmReqType, uint8_t bReque
                         USBTRACE("Co ");
                         pep->bmSndToggle = 1; //bmSNDTOG1;
                         rcode = OutTransfer(pep, nak_limit, nbytes, dataptr);
-                        if (rcode) USBTRACE2("crOUT:", rcode);
+                        if (rcode) {
+                            USBTRACE2("nak_limit:", nak_limit);
+                            USBTRACE2("crOUT:", rcode);
+                        }
                 }
                 if(rcode) //return error
                         return ( rcode);
