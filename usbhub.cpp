@@ -348,6 +348,7 @@ uint8_t USBHub::PortStatusChange(uint8_t port, HubEvent &evt) {
                         if(bResetInitiated)
                                 return 0;
 
+                        USBTRACE2("hub::conn:", evt.bmEvent);
                         ClearPortFeature(HUB_FEATURE_C_PORT_ENABLE, port, 0);
                         ClearPortFeature(HUB_FEATURE_C_PORT_CONNECTION, port, 0);
                         SetPortFeature(HUB_FEATURE_PORT_RESET, port, 0);
@@ -360,6 +361,7 @@ uint8_t USBHub::PortStatusChange(uint8_t port, HubEvent &evt) {
                         ClearPortFeature(HUB_FEATURE_C_PORT_CONNECTION, port, 0);
                         bResetInitiated = false;
 
+                        USBTRACE2("hub::disc:", evt.bmEvent);
                         UsbDeviceAddress a;
                         a.devAddress = 0;
                         a.bmHub = 0;
@@ -374,6 +376,7 @@ uint8_t USBHub::PortStatusChange(uint8_t port, HubEvent &evt) {
                         ClearPortFeature(HUB_FEATURE_C_PORT_RESET, port, 0);
                         ClearPortFeature(HUB_FEATURE_C_PORT_CONNECTION, port, 0);
 
+                        USBTRACE2("hub::reset:", evt.bmEvent);
                         delay(20);
 
                         a.devAddress = bAddress;
@@ -381,6 +384,8 @@ uint8_t USBHub::PortStatusChange(uint8_t port, HubEvent &evt) {
                         pUsb->Configuring(a.bmAddress, port, (evt.bmStatus & bmHUB_PORT_STATUS_PORT_LOW_SPEED));
                         bResetInitiated = false;
                         break;
+                default:
+                        USBTRACE2("hub::etc:", evt.bmEvent);
 
         } // switch (evt.bmEvent)
         return 0;
