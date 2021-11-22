@@ -357,7 +357,7 @@ void USBHub::ResetHubPort(uint8_t port) {
         }
         ClearPortFeature(HUB_FEATURE_C_PORT_RESET, port, 0);
         ClearPortFeature(HUB_FEATURE_C_PORT_CONNECTION, port, 0);
-        delay(20);
+        delay(50);
 }
 
 uint8_t USBHub::PortStatusChange(uint8_t port, HubEvent &evt) {
@@ -397,7 +397,7 @@ uint8_t USBHub::PortStatusChange(uint8_t port, HubEvent &evt) {
                         ClearPortFeature(HUB_FEATURE_C_PORT_CONNECTION, port, 0);
 
                         USBTRACE2("hub::reset:", evt.bmEvent);
-                        delay(20);
+                        delay(50);
 
                         a.devAddress = bAddress;
 
