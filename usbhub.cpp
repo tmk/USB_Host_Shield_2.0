@@ -52,6 +52,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         EpInfo *oldep_ptr = NULL;
         uint8_t len = 0;
         uint16_t cd_len = 0;
+        uint8_t pwr_good = 0;
 
         //USBTRACE("\r\nHub Init Start ");
         //D_PrintHex<uint8_t > (bInitState, 0x80);
@@ -163,6 +164,8 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         // Save number of ports for future use
         bNbrPorts = hd->bNbrPorts;
 
+        pwr_good =  hd->bPwrOn2PwrGood;
+
         //                bInitState = 2;
 
         //        case 2:
@@ -203,6 +206,8 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         // Power on all ports
         for(uint8_t j = 1; j <= bNbrPorts; j++)
                 SetPortFeature(HUB_FEATURE_PORT_POWER, j, 0); //HubPortPowerOn(j);
+
+        delay(pwr_good * 2);
 
         pUsb->SetHubPreMask();
         bPollEnable = true;
