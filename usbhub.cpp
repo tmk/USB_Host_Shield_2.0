@@ -164,7 +164,11 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         // Save number of ports for future use
         bNbrPorts = hd->bNbrPorts;
 
+        // https://elixir.bootlin.com/linux/v5.15.4/source/drivers/usb/core/hub.h#L147
+        USBTRACE2("hub:bPwrOn2PwrGood:", hd->bPwrOn2PwrGood);
         pwr_good =  hd->bPwrOn2PwrGood;
+        if (pwr_good < 50U) pwr_good = 50;
+        USBTRACE2("hub:pwr_good:", pwr_good);
 
         //                bInitState = 2;
 
@@ -207,10 +211,9 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         for(uint8_t j = 1; j <= bNbrPorts; j++)
                 SetPortFeature(HUB_FEATURE_PORT_POWER, j, 0); //HubPortPowerOn(j);
 
-        delay(pwr_good * 2);
-
         pUsb->SetHubPreMask();
         bPollEnable = true;
+        qNextPollTime = (uint32_t)millis() + (pwr_good * 2U);
         //                bInitState = 0;
         //}
         //bInitState = 0;
