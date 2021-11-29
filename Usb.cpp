@@ -460,6 +460,7 @@ uint8_t USB::dispatchPkt(uint8_t token, uint8_t ep, uint16_t nak_limit) {
                                         return (rcode);
                                 break;
                         case hrTIMEOUT:
+                                USBTRACE2("TO_retry:", retry_count);
                                 retry_count++;
                                 if(retry_count == USB_RETRY_LIMIT)
                                         return (rcode);
@@ -509,8 +510,10 @@ void USB::Task(void) //USB state machine
         }// switch( tmpdata
 
         for(uint8_t i = 0; i < USB_NUMDEVICES; i++)
-                if(devConfig[i])
+                if(devConfig[i]) {
                         rcode = devConfig[i]->Poll();
+                        if (rcode && rcode != hrNAK) USBTRACE2("Poll:", rcode);
+                }
 
         switch(usb_task_state) {
                 case USB_DETACHED_SUBSTATE_INITIALIZE:
@@ -603,6 +606,8 @@ uint8_t USB::DefaultAddressing(uint8_t parent, uint8_t port, bool lowspeed) {
         if(!bAddress)
                 return USB_ERROR_OUT_OF_ADDRESS_SPACE_IN_POOL;
 
+        USBTRACE2("address: ", bAddress );
+
         p = addrPool.GetUsbDevicePtr(bAddress);
 
         if(!p)
@@ -623,10 +628,12 @@ uint8_t USB::DefaultAddressing(uint8_t parent, uint8_t port, bool lowspeed) {
 
 void USB::ResetHubPort(uint8_t parent, uint8_t port) {
 	if (parent == 0) {
+                USBTRACE("ResetHubPort::BUSRST\r\n");
 		// Send a bus reset on the root interface.
 		regWr(rHCTL, bmBUSRST); //issue bus reset
 		delay(102); // delay 102ms, compensate for clock inaccuracy.
 	} else {
+                USBTRACE("ResetHubPort::ResetHubPort\r\n");
 		for (uint8_t i = 0; i < USB_NUMDEVICES; i++) {
 			if (devConfig[i]) {
 				UsbDeviceAddress addr;
@@ -774,7 +781,7 @@ uint8_t USB::Configuring(uint8_t parent, uint8_t port, bool lowspeed) {
         USBTRACE2("pid:", pid);
         USBTRACE2("klass:", klass);
         USBTRACE2("subklass:", subklass);
-        USBTRACE("AC1\n");
+        USBTRACE("AC1\r\n");
         for(devConfigIndex = 0; devConfigIndex < USB_NUMDEVICES; devConfigIndex++) {
                 if(!devConfig[devConfigIndex]) continue; // no driver
                 if(devConfig[devConfigIndex]->GetAddress()) continue; // consumed
@@ -793,7 +800,7 @@ uint8_t USB::Configuring(uint8_t parent, uint8_t port, bool lowspeed) {
 
 
         // blindly attempt to configure
-        USBTRACE("AC2\n");
+        USBTRACE("AC2\r\n");
         for(devConfigIndex = 0; devConfigIndex < USB_NUMDEVICES; devConfigIndex++) {
                 if(!devConfig[devConfigIndex]) continue;
                 if(devConfig[devConfigIndex]->GetAddress()) continue; // consumed

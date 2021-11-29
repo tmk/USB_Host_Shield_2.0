@@ -132,7 +132,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
                 return rcode;
         }
 
-        //USBTRACE2("\r\nHub address: ", bAddress );
+        USBTRACE2("\r\nHub address: ", bAddress );
 
         // Restore p->epinfo
         p->epinfo = oldep_ptr;
@@ -285,8 +285,12 @@ uint8_t USBHub::CheckHubStatus() {
 
         rcode = pUsb->inTransfer(bAddress, 1, &read, buf);
 
-        if(rcode)
+        if(rcode) {
+                if (rcode != hrNAK) USBTRACE2("hub::inT:", rcode);
                 return rcode;
+        }
+
+        USBTRACE2("hub::buf[0]:", buf[0]);
 
         //if (buf[0] & 0x01) // Hub Status Change
         //{
@@ -304,6 +308,7 @@ uint8_t USBHub::CheckHubStatus() {
                         HubEvent evt;
                         evt.bmEvent = 0;
 
+                        USBTRACE2("hub::port:", port);
                         rcode = GetPortStatus(port, 4, evt.evtBuff);
 
                         if(rcode)
@@ -363,6 +368,7 @@ void USBHub::ResetHubPort(uint8_t port) {
                 }
                 delay(100); // simulate polling.
         }
+        USBTRACE2("hub::ResetHubPort:", rcode);
         ClearPortFeature(HUB_FEATURE_C_PORT_RESET, port, 0);
         ClearPortFeature(HUB_FEATURE_C_PORT_CONNECTION, port, 0);
         delay(50);

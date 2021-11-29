@@ -232,6 +232,7 @@ public:
                         } else
                                 thePool[index].address.devAddress = 1;
 
+                        USBTRACE2("AllocAddress: ", thePool[index].address.devAddress );
                         return thePool[index].address.devAddress;
                 }
 
@@ -254,6 +255,7 @@ public:
                                 USB_HOST_SERIAL.print(".");
                                 USB_HOST_SERIAL.println(addr.bmAddress, HEX);
                  */
+                USBTRACE2("AllocAddress: ", thePool[index].address.devAddress );
                 return thePool[index].address.devAddress;
         };
 
