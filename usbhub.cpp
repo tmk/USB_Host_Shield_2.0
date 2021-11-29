@@ -214,6 +214,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         pUsb->SetHubPreMask();
         bPollEnable = true;
         qNextPollTime = (uint32_t)millis() + (pwr_good * 2U);
+        qNextPollTime += 100;   // extra wait
         //                bInitState = 0;
         //}
         //bInitState = 0;
