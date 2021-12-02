@@ -213,8 +213,22 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
 
         pUsb->SetHubPreMask();
         bPollEnable = true;
+
+        // check if hub is ready
+        // Apple A1243 hub upstream port disconnects without this for some reason
+        // busprobe() before the hub is ready
+        for (uint8_t retry = 0; retry < 50; retry++) {
+            delay(pwr_good * 2U);
+            rcode = CheckHubStatus();
+            USBTRACE2("hub::chkHubStat:", rcode);
+            if (rcode == 0 || rcode == hrNAK) break;
+        }
+/*
+        USBTRACE2("hub::millis:", millis());
         qNextPollTime = (uint32_t)millis() + (pwr_good * 2U);
         qNextPollTime += 100;   // extra wait
+        USBTRACE2("hub::qNextPollTime:", qNextPollTime);
+*/
         //                bInitState = 0;
         //}
         //bInitState = 0;
