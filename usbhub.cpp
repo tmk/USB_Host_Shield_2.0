@@ -211,9 +211,13 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
         for(uint8_t j = 1; j <= bNbrPorts; j++)
                 SetPortFeature(HUB_FEATURE_PORT_POWER, j, 0); //HubPortPowerOn(j);
 
+        // https://github.com/NetBSD/src/blob/a07ba3b594ceb04d2eb4d13c4ebd51fbc7428540/sys/dev/usb/uhub.c#L447
+        //delay(pwr_good * 2U + 20);
+        delay(2000);
+
         pUsb->SetHubPreMask();
         bPollEnable = true;
-
+/*
         // check if hub is ready
         // Apple A1243 hub upstream port disconnects without this for some reason
         // busprobe() before the hub is ready
@@ -223,6 +227,7 @@ uint8_t USBHub::Init(uint8_t parent, uint8_t port, bool lowspeed) {
             USBTRACE2("hub::chkHubStat:", rcode);
             if (rcode == 0 || rcode == hrNAK) break;
         }
+*/
 /*
         USBTRACE2("hub::millis:", millis());
         qNextPollTime = (uint32_t)millis() + (pwr_good * 2U);
