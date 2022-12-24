@@ -299,6 +299,8 @@ uint8_t HIDBoot<BOOT_PROTOCOL>::Init(uint8_t parent, uint8_t port, bool lowspeed
         uint8_t num_of_conf; // number of configurations
         //uint8_t num_of_intf; // number of interfaces
 
+        bool boot_interface = true;
+
         AddressPool &addrPool = pUsb->GetAddressPool();
 
         USBTRACE("BM Init\r\n");
@@ -418,6 +420,20 @@ uint8_t HIDBoot<BOOT_PROTOCOL>::Init(uint8_t parent, uint8_t port, bool lowspeed
                                 pUsb->getConfDescr(bAddress, 0, i, &confDescrParserA);
                                 if(bNumEP == (uint8_t)(totalEndpoints(BOOT_PROTOCOL)))
                                         break;
+
+                                // Not boot in SubClass
+                                ConfigDescParser<
+                                        USB_CLASS_HID,
+                                        HID_BOOT_INTF_SUBCLASS,
+                                        USB_HID_PROTOCOL_KEYBOARD,
+                                        CP_MASK_COMPARE_CLASS | CP_MASK_COMPARE_PROTOCOL> confDescrParser2(this);
+
+                                pUsb->getConfDescr(bAddress, 0, i, &confDescrParser2);
+                                if(bNumEP == (uint8_t)(totalEndpoints(BOOT_PROTOCOL))) {
+                                        // not boot keyboard
+                                        boot_interface = false;
+                                        break;
+                                }
                         }
                 }
 
@@ -467,9 +483,14 @@ uint8_t HIDBoot<BOOT_PROTOCOL>::Init(uint8_t parent, uint8_t port, bool lowspeed
         for(uint8_t i = 0; i < epMUL(BOOT_PROTOCOL); i++) {
                 USBTRACE2("\r\nInterface:", bootIf[i]);
 
+                if (!boot_interface) {
+                        USBTRACE("skip SET_PROTOCOL\n");
+                        goto SKIP_SET_PROTOCOL;
+                }
                 rcode = SetProtocol(bootIf[i], bRptProtoEnable ? HID_RPT_PROTOCOL : USB_HID_BOOT_PROTOCOL);
                 USBTRACE2("SET_PROTOCOL: ", rcode);
                 if (rcode && rcode != hrSTALL) goto Fail;
+SKIP_SET_PROTOCOL:
 
                 rcode = SetIdle(bootIf[i], 0, 0);
                 USBTRACE2("SET_IDLE: ", rcode);
