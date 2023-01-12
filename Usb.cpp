@@ -550,6 +550,10 @@ void USB::Task(void) //USB state machine
                 case USB_STATE_RUNNING:
                         break;
                 case USB_STATE_ERROR:
+                        USBTRACE2("ERROR:", usb_error);
+                        // Wait and Bus Reset
+                        delay = (uint32_t)millis() + USB_SETTLE_DELAY;
+                        usb_task_state = USB_ATTACHED_SUBSTATE_SETTLE;
                         //MAX3421E::Init();
                         break;
         } // switch( usb_task_state )
