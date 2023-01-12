@@ -607,10 +607,16 @@ again:
         uint8_t rcode = devConfig[driver]->ConfigureDevice(parent, port, lowspeed);
         if(rcode == USB_ERROR_CONFIG_REQUIRES_ADDITIONAL_RESET) {
                 if(parent == 0) {
+                        USBTRACE(">>BUSRST\n");
                         // Send a bus reset on the root interface.
                         regWr(rHCTL, bmBUSRST); //issue bus reset
+                        while ((regRd(rHCTL) & bmBUSRST)) { ; }
+                        regWr(rHIRQ, bmFRAMEIRQ);
+                        regWr(rMODE, regRd(rMODE) | bmSOFKAENAB);
+                        while (!(regRd(rHIRQ) & bmFRAMEIRQ)) { ; }
                         delay(102); // delay 102ms, compensate for clock inaccuracy.
                 } else {
+                        USBTRACE(">>HUBRST\n");
                         // reset parent port
                         devConfig[parent]->ResetHubPort(port);
                 }
@@ -630,10 +636,16 @@ again:
         if(rcode) {
                 // Issue a bus reset, because the device may be in a limbo state
                 if(parent == 0) {
+                        USBTRACE(">>>>BUSRST\n");
                         // Send a bus reset on the root interface.
                         regWr(rHCTL, bmBUSRST); //issue bus reset
+                        while ((regRd(rHCTL) & bmBUSRST)) { ; }
+                        regWr(rHIRQ, bmFRAMEIRQ);
+                        regWr(rMODE, regRd(rMODE) | bmSOFKAENAB);
+                        while (!(regRd(rHIRQ) & bmFRAMEIRQ)) { ; }
                         delay(102); // delay 102ms, compensate for clock inaccuracy.
                 } else {
+                        USBTRACE(">>>>HUBRST\n");
                         // reset parent port
                         devConfig[parent]->ResetHubPort(port);
                 }
