@@ -251,6 +251,8 @@ public:
         virtual bool DEVSUBCLASSOK(uint8_t subklass) {
                 return (subklass == BOOT_PROTOCOL);
         }
+
+        uint8_t  SetLed(uint8_t *led);
 };
 
 template <const uint8_t BOOT_PROTOCOL>
@@ -624,6 +626,12 @@ uint8_t HIDBoot<BOOT_PROTOCOL>::Poll() {
                 qNextPollTime = (uint32_t)millis() + bInterval;
         }
         return rcode;
+}
+
+template <const uint8_t BOOT_PROTOCOL>
+uint8_t HIDBoot<BOOT_PROTOCOL>::SetLed(uint8_t *led) {
+        // ep, iface, report_type(output), report_id(0), nbytes(1), dataptr
+        return SetReport(0, bootIf[0], 2, 0, 1, led);
 }
 
 #endif // __HIDBOOTMOUSE_H__
