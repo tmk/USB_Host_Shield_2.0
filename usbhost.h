@@ -158,6 +158,10 @@ public:
         uint8_t GpxHandler();
         uint8_t IntHandler();
         uint8_t Task();
+
+        void suspend();
+        void resume();
+        bool checkRemoteWakeup();
 };
 
 template< typename SPI_SS, typename INTR >
@@ -611,5 +615,36 @@ uint8_t MAX3421e< SPI_SS, INTR >::IntHandler() {
 ////    }
 //    return( GPINIRQ );
 //}
+
+template< typename SPI_SS, typename INTR >
+void MAX3421e< SPI_SS, INTR >::suspend() {
+        // clear RWUIRQ bit
+        regWr(rHIRQ, bmRWUIRQ);
+
+        // stop SOF
+        regWr(rMODE, (regRd(rMODE) & ~bmSOFKAENAB));
+}
+
+template< typename SPI_SS, typename INTR >
+void MAX3421e< SPI_SS, INTR >::resume() {
+        // resume
+        regWr(rHCTL, bmSIGRSM);
+        while ((regRd(rHCTL) & bmSIGRSM)) { ; }
+
+        // start SOF
+        regWr(rHIRQ, bmFRAMEIRQ);
+        regWr(rMODE, regRd(rMODE) | bmSOFKAENAB);
+        while (!(regRd(rHIRQ) & bmFRAMEIRQ)) { ; }
+}
+
+template< typename SPI_SS, typename INTR >
+bool MAX3421e< SPI_SS, INTR >::checkRemoteWakeup() {
+        if (regRd(rHIRQ) & bmRWUIRQ) {
+            // clear the bit
+            regWr(rHIRQ, bmRWUIRQ);
+            return true;
+        }
+        return false;
+}
 
 #endif // _USBHOST_H_
