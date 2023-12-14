@@ -644,6 +644,21 @@ bool MAX3421e< SPI_SS, INTR >::checkRemoteWakeup() {
             regWr(rHIRQ, bmRWUIRQ);
             return true;
         }
+
+        // sample bus in case RWUIRQ is not triggered
+        // https://github.com/tmk/tmk_keyboard/issues/769#issuecomment-1856023601
+        regWr(rHCTL, bmSAMPLEBUS);
+        while(!(regRd(rHCTL) & bmSAMPLEBUS));
+
+        uint8_t bus_sample;
+        bus_sample = regRd(rHRSL);
+        bus_sample &= (bmJSTATUS | bmKSTATUS);
+
+        if (bus_sample == bmKSTATUS) {
+            // K-state means remote wakeup when suspended
+            return true;
+        }
+
         return false;
 }
 
