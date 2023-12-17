@@ -162,6 +162,8 @@ public:
         void suspend();
         void resume();
         bool checkRemoteWakeup();
+        void powerDown();
+        void powerUp();
 };
 
 template< typename SPI_SS, typename INTR >
@@ -660,6 +662,22 @@ bool MAX3421e< SPI_SS, INTR >::checkRemoteWakeup() {
         }
 
         return false;
+}
+
+template< typename SPI_SS, typename INTR >
+void MAX3421e< SPI_SS, INTR >::powerDown() {
+        // clear for next powerUp here
+        regWr(rUSBIRQ, bmOSCOKIRQ);
+
+        // power down
+        regWr(rUSBCTL, bmPWRDOWN);
+}
+
+template< typename SPI_SS, typename INTR >
+void MAX3421e< SPI_SS, INTR >::powerUp() {
+        // power up
+        regWr(rUSBCTL, 0x00);
+        while (!regRd(rUSBIRQ) & bmOSCOKIRQ) { ; }
 }
 
 #endif // _USBHOST_H_

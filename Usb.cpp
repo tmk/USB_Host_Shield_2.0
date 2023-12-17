@@ -803,6 +803,12 @@ uint8_t USB::ReleaseDevice(uint8_t addr) {
         return 0;
 }
 
+void USB::ReleaseAllDevices() {
+        for(uint8_t i = 0; i < USB_NUMDEVICES; i++)
+                if(devConfig[i])
+                        devConfig[i]->Release();
+}
+
 #if 1 //!defined(USB_METHODS_INLINE)
 //get device descriptor
 
