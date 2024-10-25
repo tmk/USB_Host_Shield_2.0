@@ -452,7 +452,7 @@ uint8_t HIDBoot<BOOT_PROTOCOL>::Init(uint8_t parent, uint8_t port, bool lowspeed
                                 }
 
                                 // https://github.com/tmk/tmk_keyboard/issues/778
-                                if (device->idVendor == 0xfefe && device->idProduct == 0x0123) {
+                                if (device->idVendor == 0x0c45 && device->idProduct == 0xfefe) {
                                     // HID / not boot / not keyboard
                                     ConfigDescParser<
                                             USB_CLASS_HID,
